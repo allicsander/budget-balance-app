@@ -24,6 +24,33 @@ var budgetController = (function() {
         budget: 0
     };
 
+    return {
+        addItem: function(type, desc, val){
+           var newItem, ID;
+
+           if(data.allItems[type].length > 0) {
+              ID = data.allItems[type][data.allItems[type].length - 1].id + 1;    
+           } else {
+              ID = 0;
+           }
+
+           if(type === "exp") {
+             newItem = new Expense(ID, desc, val);
+           } else if (type === "inc") {
+             newItem = new Income(ID, desc, val);
+           }
+        
+           data.allItems[type].push(newItem);
+           
+           return newItem;
+      
+        },
+
+        testing: function() {
+            console.log(data);
+        }
+    }
+
 
 })();
 
@@ -71,8 +98,18 @@ var appController = (function(budgetCtrl, uICtrl) {
 
     var controlAddItem = function(){
 
-        var input = uICtrl.getInput();
-      
+        var input, newItem;
+
+        input = uICtrl.getInput();
+
+        if (input.description != "" && !isNaN(input.value) && input.value > 0) {
+
+          newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+
+        }
+
+        budgetCtrl.testing();
+
     }
     
    return {
