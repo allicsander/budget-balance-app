@@ -33,23 +33,33 @@ var uIController = (function() {
 
 var appController = (function(budgetCtrl, uICtrl) {
 
+    var setupEventListeners = function() {
+        var DOM = uICtrl.getDOMstrings();
+    
+        document.querySelector(DOM.inputBtn).addEventListener('click', controlAddItem);
 
-    var DOM = uICtrl.getDOMstrings();
+        document.addEventListener('keypress', function(e){
+             if(e.keyCode === 13 || e.which === 13){
+                controlAddItem();
+             }
+        });
+    }
+    
 
     var controlAddItem = function(){
 
         var input = uICtrl.getInput();
-        console.log(input);
+      
     }
     
-    document.querySelector(DOM.inputBtn).addEventListener('click', controlAddItem);
-
-    document.addEventListener('keypress', function(e){
-         if(e.keyCode === 13 || e.which === 13){
-            controlAddItem();
-         }
-    });
+   return {
+       init: function(){
+           console.log('App is running');
+           setupEventListeners();
+       }
+   }
 
 })(budgetController, uIController);
 
 
+appController.init();
