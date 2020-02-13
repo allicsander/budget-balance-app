@@ -61,7 +61,28 @@ var uIController = (function() {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
-        inputBtn: '.add__btn'
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list'
+    };
+
+    var formatNumber = function(num, type) {
+        var numSplit, int, dec;
+        
+        num = Math.abs(num);
+        num = num.toFixed(2);
+        
+        numSplit = num.split('.');
+        
+        int = numSplit[0];
+        if(int.length > 3) {
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, int.length);
+        }
+        
+        dec = numSplit[1];
+        
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+        
     };
 
     return {
@@ -71,6 +92,27 @@ var uIController = (function() {
                 description: document.querySelector(DOMstrings.inputDescription).value,
                 value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
+        },
+
+        addListItem: function(obj, type) {
+            var html, newHtml, element;
+           
+            if(type === 'inc') {
+                element = DOMstrings.incomeContainer;
+                
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            } else if(type === 'exp') {
+                element = DOMstrings.expensesContainer;
+                
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            }
+            
+            
+            newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%description%', obj.description);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
+            
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
 
         getDOMstrings: function(){
@@ -105,6 +147,8 @@ var appController = (function(budgetCtrl, uICtrl) {
         if (input.description != "" && !isNaN(input.value) && input.value > 0) {
 
           newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+
+          uICtrl.addListItem(newItem, input.type);
 
         }
 
