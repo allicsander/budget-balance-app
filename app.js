@@ -6,6 +6,18 @@ var budgetController = (function() {
         this.value = value;
     };
 
+    Expense.prototype.calcPercentage = function(totalIncome) {
+        if(totalIncome > 0) {
+            this.percentage = Math.round((this.value / totalIncome) * 100);
+        } else {
+            this.percentage = -1;
+        }
+    };
+    
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
+    };
+
     var Income = function(id, description, value) {
         this.id = id;
         this.description = description;
@@ -156,6 +168,12 @@ var uIController = (function() {
         
     };
 
+    var nodeListForEach = function(list, callback) {
+        for (var i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
+    };
+
     return {
         getInput: function() {
             return {
@@ -221,6 +239,35 @@ var uIController = (function() {
             }
         },
         
+        displayPercentages: function(percentages) {
+            
+            var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
+            
+            nodeListForEach(fields, function(current, index) {
+                
+                if (percentages[index] > 0) {
+                    current.textContent = percentages[index] + '%';
+                } else {
+                    current.textContent = '---';
+                }
+                
+            });
+        },
+
+        changedType: function() {
+            
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue);
+            
+            nodeListForEach(fields, function(cur) {
+                cur.classList.toggle('red-focus');
+            });
+            
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+            
+        },
 
         getDOMstrings: function(){
             return DOMstrings;
@@ -259,6 +306,15 @@ var appController = (function(budgetCtrl, uICtrl) {
          uICtrl.displayBudget(budget);
     };
 
+    var updatePercentages = function() {
+        
+        budgetCtrl.calculatePercentages();
+        
+        var percentages = budgetCtrl.getPercentages();
+        
+        uICtrl.displayPercentages(percentages);
+        
+    };
 
 
     var controlAddItem = function(){
@@ -275,11 +331,11 @@ var appController = (function(budgetCtrl, uICtrl) {
 
           uICtrl.clearFields();
 
-          updateBudget()
+          updateBudget();
+
+          updatePercentages();
 
         }
-
-        budgetCtrl.testing();
 
     };
 
