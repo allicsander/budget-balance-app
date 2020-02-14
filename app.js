@@ -292,7 +292,7 @@ var appController = (function(budgetCtrl, uICtrl) {
 
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
 
-
+        document.querySelector(DOM.inputType).addEventListener('change', uICtrl.changedType);
 
     };
     
